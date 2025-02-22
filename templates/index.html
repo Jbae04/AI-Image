@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div id="time"></div>
+    </header>
+
+    <main>
+        <h1 id="title">Your AI Assistant!</h1>
+
+        <form id="upload-form" action="/process_image" method="post" enctype="multipart/form-data">
+            <input type="file" name="image" accept="image/*" required>
+            <input type="text" name="query" placeholder="Enter your query" required>
+            <button type="submit">Submit</button>
+        </form>
+
+        <div id="response-container">
+            <div class="response-box">
+                <h2>90B Model Response</h2>
+                <p id="response-90b">{{ response_90b if response_90b else "<span class='waiting-text'>Waiting for response...</span>" | safe }}</p>
+            </div>
+            <div class="response-box">
+                <h2>11B Model Response</h2>
+                <p id="response-11b">{{ response_11b if response_11b else "<span class='waiting-text'>Waiting for response...</span>" | safe }}</p>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const options = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById("time").textContent = now.toLocaleTimeString('en-US', options);
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Function to check for responses and stop the typing animation
+        function checkResponses() {
+            const response90b = document.getElementById("response-90b");
+            const response11b = document.getElementById("response-11b");
+
+            if (response90b.innerText !== "Waiting for response..." && response11b.innerText !== "Waiting for response...") {
+                clearInterval(responseCheckInterval);
+            }
+        }
+
+        const responseCheckInterval = setInterval(checkResponses, 500);
+    </script>
+</body>
+</html>
